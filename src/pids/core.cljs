@@ -1,8 +1,7 @@
-(ns pids.core
-    (:require-macros [cljs.core.async.macros :refer [go go-loop]])
-    (:require [rum.core :as rum]
-            [cljs-http.client :as http]
-            [cljs.core.async :refer [<! timeout]]))
+(ns pids.core (:require-macros [cljs.core.async.macros :refer [go go-loop]])
+              (:require [rum.core :as rum]
+                 [cljs-http.client :as http]
+                 [cljs.core.async :refer [<! timeout]]))
 (enable-console-print!)
 
 (defn randstr [length]
@@ -14,7 +13,7 @@
   (go (:body (<! (http/get (str "http://stream.nbcsports.com/data/" type pid ".json") {:with-credentials? false})))))
 
 (defn setAll [dataAtom statsAtom filterParam]
-  (let [allPids (into [] (concat (range 200000 200100) (range 202600 204200) (range 204200 205200)))
+  (let [allPids (into [] (concat (range 200000 201000) (range 202000 203000)))
          startTime (.now js/performance)]
    (go-loop [pidsArr allPids]
        (let [currentPid (first pidsArr)
@@ -43,6 +42,5 @@
      (progressBar statsAtom)
      (linesDisp dataAtom)]))
 
-(defn init []
-  (rum/mount (displayContainer) (.getElementById js/document "app")))
+(defn init [] (rum/mount (displayContainer) (.getElementById js/document "app")))
 (init)
