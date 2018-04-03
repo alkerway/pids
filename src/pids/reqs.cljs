@@ -16,5 +16,5 @@
   (go (:body (<! (getResponse (str "http://stream.nbcsports.com/data/" type pid ".json"))))))
 
 (defn openUrl [url unauth]
-  (let [encodedUrl (.encodeURIComponent js/window (str url (if unauth toke)))]
+  (let [encodedUrl (.encodeURIComponent js/window (str url (if (not unauth) toke)))]
     (.open js/window (str mvBase "url=" encodedUrl "&showVideo=1&muted=1") "_blank")))
