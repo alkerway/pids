@@ -1,5 +1,6 @@
 (ns pids.core (:require-macros [cljs.core.async.macros :refer [go go-loop]])
     (:require [rum.core :as rum]
+              [pids.config :as config]
               [pids.parser :as parser]
               [pids.reqs :as reqs]
               [clojure.string :as cljstr]
@@ -12,7 +13,7 @@
       (recur (str accStr (nth possible (rand-int (count possible))))) accStr))))
                    
 (defn setAll [dataAtom statsAtom filterParam]
-  (let [allPids (into [] (concat (range 200000 200800) (range 202700 203000) (range 204000 205000)))
+  (let [allPids config/pidrange
          startTime (.now js/performance)]
    (go-loop [pidsArr allPids]
        (let [currentPid (first pidsArr)
@@ -29,10 +30,11 @@
          (swap! dataAtom conj
                 (str currentPid " " sourceUrl "  "
                      (if (:status setMResp) (str (:status setMResp)
-                         (if (= (:status unauthCheck) 403) "*" "")))
-                     (if isLive (str " (Actually Live)")))))
+                         (if (= (:status unauthCheck) 403) "*" (if (= (:status unauthCheck) 200) " (unauth)"))))
+                     (if isLive (str " (live)")))))
        (if (not-empty pidsArr) (recur (rest pidsArr))
-           (reset! statsAtom (str "Found " (count @dataAtom) " of " (count allPids) " pids in "
+           (reset! statsAtom (str "Found " (count @dataAtom) " of " (count allPids) " "
+                                  config/streamtype " pids in "
                 (/ (- (.now js/performance) startTime) 1000) " seconds")))))))
 
 (rum/defc progressBar < rum/reactive [percentStr]
@@ -42,13 +44,16 @@
                  :height "20px"}} (rum/react percentStr)]])
 
 (rum/defc linesDisp < rum/reactive [atomAsVector]
-  [:div (for [line (rum/react atomAsVector)] [:div line])])
+  [:div {:style {:max-height "500px"
+                 :overflow "scroll"
+                 :white-space "nowrap"}
+         } (for [line (rum/react atomAsVector)] [:div line])])
 
 (rum/defc displayContainer []
   (let [dataAtom (atom [])
         statsAtom (atom nil)]
      [:div {:style {:width "100%" :height "100%"}}
-     [:button {:on-click #(setAll dataAtom statsAtom "live")} "get"]
+     [:button {:on-click #(setAll dataAtom statsAtom config/streamtype)} "get"]
       [:button {:on-click #(reset! dataAtom [])} "clear"]
       [:span  {:style {:font-size "11px"}} (str " using token " reqs/toke)]
      (progressBar statsAtom)

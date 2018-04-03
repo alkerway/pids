@@ -9,7 +9,8 @@
               (pop (cljstr/split manifestUrl "/"))) "/" text)) nil))
 
 (defn isLive [str]
-  (not (re-find #"ENDLIST" str)))
+  (and (re-find #"EXTM3U" str)
+       (not (re-find #"ENDLIST" str))))
 
 (defn getStream [manifestVector]
   (first (filter #(re-matches #".+\.m3u8" %) manifestVector)))
