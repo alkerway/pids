@@ -12,5 +12,12 @@
   (and (re-find #"EXTM3U" str)
        (not (re-find #"ENDLIST" str))))
 
+(defn mSequence [str]
+  (if (re-find #"MEDIA-SEQUENCE" str)
+    (let [lines  (cljstr/split str "\n")]
+      (last (cljstr/split (first
+        (filter #(re-find #"MEDIA-SEQUENCE" %)
+          lines)) ":"))) nil))
+
 (defn getStream [manifestVector]
   (first (filter #(re-matches #".+\.m3u8" %) manifestVector)))

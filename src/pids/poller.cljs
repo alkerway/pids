@@ -16,13 +16,15 @@
              unauthCheck (if sourceUrl (<! (reqs/getResponse sourceUrl)))
              setMResp (if (= (:status unauthCheck) 403) (<! (reqs/getResponse sourceUrl true)) unauthCheck)
              streamUrl (if (= (:status setMResp) 200)
-                (parser/constructUrl sourceUrl (parser/getStream (cljstr/split-lines (:body setMResp)))))
-             isLive (if (not-empty streamUrl) (parser/isLive (:body (<! (reqs/getResponse streamUrl)))))]
+                         (parser/constructUrl sourceUrl (parser/getStream (cljstr/split-lines (:body setMResp)))))
+             streamResp (if (not-empty streamUrl) (<! (reqs/getResponse streamUrl)))
+             isLive (if (= (:status streamResp) 200) (parser/isLive (:body streamResp)))
+             mediaSequence (if (= (:status streamResp) 200) (parser/mSequence (:body streamResp)))]
          (reset! statsAtom (str (* 100 (/ (- (count allPids) (count (rest pidsArr))) (count allPids))) "%"))
        (if (not-empty sourceUrl)
          (swap! dataAtom conj
                 {:pid currentPid :url sourceUrl :setMRespStatus (:status setMResp)
-                 :unauth (= (:status unauthCheck) 200) :isLive isLive}))
+                 :unauth (= (:status unauthCheck) 200) :isLive isLive :ms mediaSequence}))
        (if (not-empty pidsArr) (recur (rest pidsArr))
            (reset! statsAtom (str "Found " (count @dataAtom) " of " (count allPids) " pids in "
                 (/ (- (.now js/performance) startTime) 1000) " seconds")))))))

@@ -12,9 +12,9 @@
                  :height "20px"}} (rum/react percentStr)]])
 
 (rum/defc linesDisp < rum/reactive [atomAsVector]
-  [:div {:style {:max-height "500px" :overflow "scroll" :white-space "nowrap"}}
+  [:div {:style {:max-height "500px" :max-width "950px" :overflow "scroll" :white-space "nowrap"}}
          (for [line (rum/react atomAsVector)]
-           [:div [:span (:pid line)]
+           [:div [:span (str (:pid line) " ms:" (:ms line))]
             [:span {:style {:cursor "pointer"}
                     :on-click #(reqs/openUrl (:url line) (:unauth line))} (str " " (:url line) " ")]
             [:span (str " " (:setMRespStatus line)
