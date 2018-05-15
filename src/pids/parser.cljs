@@ -1,5 +1,7 @@
 (ns pids.parser (:require [clojure.string :as cljstr]))
 
+                                        (enable-console-print!)
+
 (defn constructUrl [manifestUrl text]
   (if (and manifestUrl text)
   (cond (re-matches #"^http.*" text) text
@@ -17,7 +19,12 @@
     (let [lines  (cljstr/split str "\n")]
       (last (cljstr/split (first
         (filter #(re-find #"MEDIA-SEQUENCE" %)
-          lines)) ":"))) nil))
+                lines)) ":"))) nil))
+(defn discoCount [str]
+  (if (re-find #"DISCONTINUITY" str)
+    (let [lines (cljstr/split str "\n")]
+      (println "aaa")
+      (count (filter #(re-find #".+DISCONTINUITY.+" %) lines))) 0))
 
 (defn getStream [manifestVector]
   (first (filter #(re-matches #".+\.m3u8" %) manifestVector)))
