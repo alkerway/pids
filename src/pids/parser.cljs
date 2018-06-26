@@ -23,7 +23,6 @@
 (defn discoCount [str]
   (if (re-find #"DISCONTINUITY" str)
     (let [lines (cljstr/split str "\n")]
-      (println "aaa")
       (count (filter #(re-find #".+DISCONTINUITY.+" %) lines))) 0))
 
 (defn getStream [manifestVector]
