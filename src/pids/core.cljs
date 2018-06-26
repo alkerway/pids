@@ -31,14 +31,21 @@
                  :height "20px"}} (rum/react percentStr)]])
 
 (rum/defc linesDisp < rum/reactive [atomAsVector]
-  [:div (for [line (rum/react atomAsVector)] [:div line])])
+  [:div {:style {:max-height "500px" :max-width "950px" :overflow "scroll" :white-space "nowrap"}}
+         (for [line (rum/react atomAsVector)]
+           [:div [:span (str (:pid line) " ms:" (:ms line))]
+            [:span {:style {:cursor "pointer"}
+                    :on-click #(reqs/openUrl (:url line) (:unauth line))} (str " " (:url line) " ")]
+            [:span (str " " (:setMRespStatus line)
+                (if (:unauth line) " (unauth)") (if (:isLive line) " (live)"))]])])
 
 (rum/defc displayContainer []
   (let [dataAtom (atom [])
         statsAtom (atom nil)]
      [:div {:style {:width "100%" :height "100%"}}
-     [:button {:on-click #(setAll dataAtom statsAtom "live")} "get"]
-     [:button {:on-click #(reset! dataAtom [])} "clear"]
+     [:button {:on-click #(poller/startPoll dataAtom statsAtom config/streamtype)} "get"]
+      [:button {:on-click #(reset! dataAtom [])} "clear"]
+      [:span  {:style {:font-size "11px"}} (str " token " reqs/toke)]
      (progressBar statsAtom)
      (linesDisp dataAtom)]))
 
