@@ -7,7 +7,7 @@
           (str (aget (new js/URL manifestUrl) "origin") text)
         :else (str (cljstr/join "/"
               (pop (cljstr/split manifestUrl "/"))) "/" text)) nil))
-
+            
 (defn isLive [str]
   (and (re-find #"EXTM3U" str)
        (not (re-find #"ENDLIST" str))))
@@ -17,7 +17,11 @@
     (let [lines  (cljstr/split str "\n")]
       (last (cljstr/split (first
         (filter #(re-find #"MEDIA-SEQUENCE" %)
-          lines)) ":"))) nil))
+                lines)) ":"))) nil))
+(defn discoCount [str]
+  (if (re-find #"DISCONTINUITY" str)
+    (let [lines (cljstr/split str "\n")]
+      (count (filter #(re-find #".+DISCONTINUITY.+" %) lines))) 0))
 
 (defn getStream [manifestVector]
   (first (filter #(re-matches #".+\.m3u8" %) manifestVector)))

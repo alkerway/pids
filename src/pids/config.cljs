@@ -1,7 +1,10 @@
 (ns pids.config)
-  (def streamtype "replay")
-  (def pidrange (into [] (concat ;(range 28500 31500)
-                        ;(range 200000 201000)
-                        ;(range 202700 204000)
-                        (range 202000 205000))))
-
+(def streamtype "live")
+(def mvBase "http://mv-stage.realeyes.cloud/?")
+(def showms false)
+(def showdisco false)
+(def pidrange (into [] (concat 
+                        (range 200000 200030)
+                        (range 202000 210000)
+                        ;(range 400000 404000)
+                        )))
