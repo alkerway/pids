@@ -5,6 +5,6 @@
 (def showdisco false)
 (def pidrange (into [] (concat 
                         (range 200000 200030)
-                        (range 202000 210000)
+                        (range 202000 203000)
                         ;(range 400000 404000)
                         )))

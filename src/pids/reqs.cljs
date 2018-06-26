@@ -17,4 +17,4 @@
 
 (defn openUrl [url unauth]
   (let [encodedUrl (.encodeURIComponent js/window (str url (if (not unauth) toke)))]
-    (.open js/window (str config/mvBase "url=" encodedUrl "&showVideo=1" (if (not unauth) "&xhrCredentials=1")) "_blank")))
+    (.open js/window (str config/mvBase "url=" encodedUrl "&showVideo=1&showMetrics=1" (if (not unauth) "&xhrCredentials=1")) "_blank")))
